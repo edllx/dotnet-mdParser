@@ -1,13 +1,7 @@
 namespace edllx.dotnet.mdParser;
 
 //TODO
-/**
-  H1,
-  H2,
-  H3,
-  H4,
-  H5,
-  H6,
+/** 
   BOLD,
   ITALIC,
   STRIKETHROUGH,
@@ -31,7 +25,7 @@ namespace edllx.dotnet.mdParser;
 */
 
 
-public class Token 
+public partial class Token 
 {
   public List<Token> Childrens {get;private set;} =[];
   public string Body {get; private set;} = "";
@@ -53,6 +47,7 @@ public class Token
     Token other = (Token)obj;
     if(other.Childrens.Count != Childrens.Count){return false;}
     if(other.Body != Body){return false;}
+    if(other.Depth != Depth){return false;}
 
     for(int i =0;i<Childrens.Count;i++)
     {
@@ -73,8 +68,8 @@ public class Token
 
   public override string ToString()
   {
-    string indentation = string.Concat(Enumerable.Repeat(" ",this.Depth));
-    string output = $"{indentation}{GetName()}: {this.Body}";
+    string indentation = string.Concat(Enumerable.Repeat(" ",Depth));
+    string output = $"{indentation}{GetName()}: {Body}";
 
     foreach(Token t in Childrens)
     {
@@ -83,11 +78,80 @@ public class Token
 
     return output;
   }
+
+}
+
+// Generators
+public partial class Token
+{
+
+  //Root 
+  public static Root Root(List<Token> childrens)
+  {
+    return new Root(childrens);
+  }
+
+  // Heading
+  public static Heading H1(List<Token> childrens)
+  {
+    return new(childrens,"",1,1);
+  }
+
+  public static Heading H2(List<Token> childrens)
+  {
+    return new(childrens,"",1,2);
+  }
+
+  public static Heading H3(List<Token> childrens)
+  {
+    return new(childrens,"",1,3);
+  }
+
+  public static Heading H4(List<Token> childrens)
+  {
+    return new(childrens,"",1,4);
+  }
+
+  public static Heading H5(List<Token> childrens)
+  {
+    return new(childrens,"",1,5);
+  }
+
+  public static Heading H6(List<Token> childrens)
+  {
+    return new(childrens,"",1,6);
+  }
+
+  // Phrase
+  public static Phrase Phrase(string body,int depth)
+  {
+    return new(body,depth);
+  }
+
+  // NewLine
+  public static NewLine NewLine(int depth)
+  {
+    return new(depth);
+  }
 }
 
 public class Root : Token
 {
-  public Root(List<Token> childrens) : base(childrens, "", 0)
+  internal Root(List<Token> childrens) : base(childrens, "", 0)
+  {
+  }
+}
+
+public class Phrase : Token
+{
+  internal Phrase(string body, int depth) : base([], body, depth)
+  {
+  }
+}
+
+public class NewLine : Token
+{
+  internal NewLine( int depth) : base([], "\n", depth)
   {
   }
 }

@@ -5,101 +5,135 @@ namespace __tests__;
 
 public class HeadingTest 
 {
-    [Fact]
-    [Description("Base case H1")]
-    public void BaseH1()
-    {
-      // Arrange 
-      string text ="This is a heading 1"; 
-      string sample = $"# {text}";
-     
-      Root expected = new([
-          Heading.H1(text)
-      ]);
+  [Fact]
+  [Description("Base case H1")]
+  public void BaseH1()
+  {
+    // Arrange 
+    string text ="This is a heading 1"; 
+    string sample = $"# {text}";
 
-      // Act 
+    Root expected = Token.Root([
+        Token.H1([
+          Token.Phrase(text,2)
+        ])
+    ]);
 
-      Root actual = Parser.Parse(sample);
+    // Act 
 
-      // Assert
-      Assert.Equal<Token>(expected,actual);
+    Root actual = Parser.Parse(sample);
 
-    }
 
-    [Fact]
-    [Description("Base case H6")]
-    public void BaseH6()
-    {
-      // Arrange 
-      string text ="This is a heading 6"; 
-      string sample = $"###### {text}";
+    // Assert
+    Assert.Equal<Token>(expected,actual);
 
-      Root expected = new([
-          Heading.H6(text)
-      ]);
+  }
 
-      // Act 
+  [Fact]
+  [Description("Base case H6")]
+  public void BaseH6()
+  {
+    // Arrange 
+    string text ="This is a heading 6"; 
+    string sample = $"###### {text}";
 
-      Root actual = Parser.Parse(sample);
+    Root expected = Token.Root([
+        Token.H6([
+          Token.Phrase(text,2)
+        ])
+    ]);
 
-      // Assert
-      Assert.Equal<Token>(expected,actual);
-    }
+    // Act 
 
-    [Fact]
-    [Description("Test all size")]
-    public void AllSizes()
-    {
-      // Arrange 
-      string sample = $@"# H1
+    Root actual = Parser.Parse(sample);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+  [Fact]
+  [Description("Test all size")]
+  public void AllSizes()
+  {
+    // Arrange 
+    string sample = $@"# H1
 ## H2
 ### H3
 #### H4
 ##### H5
 ###### H6";
 
-        Root expected = new([
-            Heading.H1("H1"),
-            Heading.H2("H2"),
-            Heading.H3("H3"),
-            Heading.H4("H4"),
-            Heading.H5("H5"),
-            Heading.H6("H6")
-        ]);
+      Root expected = Token.Root([
+          Heading.H1([
 
-      // Act 
+            Token.Phrase("H1",2)
+          ]),
+          Heading.H2([
 
-      Root actual = Parser.Parse(sample);
+            Token.Phrase("H2",2)
+          ]),
+          Heading.H3([
 
-      // Assert
-      Assert.Equal<Token>(expected,actual);
-    }
+            Token.Phrase("H3",2)
+          ]),
+          Heading.H4([
 
-    [Fact]
-    [Description("Testing that different header size with same text a not equal")]
-    public void DifferentSize()
-    {
-      // Arrange 
-      string text ="This is a heading 1"; 
-      string h1 = $"# {text}";
-      string h2 = $"## {text}";
+            Token.Phrase("H4",2)
+          ]),
+          Heading.H5([
 
-      // Act 
+            Token.Phrase("H5",2)
+          ]),
+          Heading.H6([
 
-      Root actualH1 = Parser.Parse(h1);
-      Root actualH2 = Parser.Parse(h2);
+              Token.Phrase("H6",2)
+          ])
+            ]);
 
-      // Assert
-      Assert.NotEqual<Token>(actualH1,actualH2);
+    // Act 
 
-    }
+    Root actual = Parser.Parse(sample);
 
-    [Fact]
-    [Description("Test more than 6 #")]
-    public void MoreThan6()
-    {
-      // TODO should not be a header (probably need to be a word);
-      Assert.True(true);
-    }
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+  [Fact]
+  [Description("Testing that different header size with same text a not equal")]
+  public void DifferentSize()
+  {
+    // Arrange 
+    string text ="This is a heading 1"; 
+    string h1 = $"# {text}";
+    string h2 = $"## {text}";
+
+    // Act 
+
+    Root actualH1 = Parser.Parse(h1);
+    Root actualH2 = Parser.Parse(h2);
+
+    // Assert
+    Assert.NotEqual<Token>(actualH1,actualH2);
+
+  }
+
+  [Fact]
+  [Description("Test more than 6 #")]
+  public void MoreThan6()
+  {
+    // TODO should not be a header (probably need to be a word);
+    Assert.True(true);
+  }
+
+
+
+  [Fact]
+  [Description("Test nested element")]
+  public void NestedElement()
+  {
+    // TODO should handle nested element;
+    Assert.True(true);
+  }
+
 }
 

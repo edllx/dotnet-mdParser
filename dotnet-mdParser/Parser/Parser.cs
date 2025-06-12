@@ -4,6 +4,7 @@ public class Parser
 {
   public static Root Parse(string input)
   {
-    return new Root([]);
+    Tokenizer tokenizer = new(input);
+    return tokenizer.Generate();
   }
 }
