@@ -7,8 +7,8 @@ public class GeneralTest
 {
 
   [Fact]
-  [Description("Simple word test")]
-  public void BaseH6()
+  [Description("Simple phrase test")]
+  public void Phase()
   {
     // Arrange 
     string text ="Simple word"; 
@@ -25,4 +25,25 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
+  [Fact]
+  [Description("Simple bold word test")]
+  public void Bold()
+  {
+    // Arrange 
+    string text ="Simple bold word"; 
+    string bold = $"**{text}**";
+
+    Root expected = Token.Root([
+        Token.Bold([
+          Token.Phrase(text,2)
+        ],1)
+    ]);
+
+    // Act 
+
+    Root actual = Parser.Parse(bold);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
 }

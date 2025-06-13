@@ -20,7 +20,6 @@ public class HeadingTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(sample);
 
 
@@ -44,7 +43,6 @@ public class HeadingTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(sample);
 
     // Assert
@@ -64,34 +62,33 @@ public class HeadingTest
 ###### H6";
 
       Root expected = Token.Root([
-          Heading.H1([
+          Token.H1([
 
             Token.Phrase("H1",2)
           ]),
-          Heading.H2([
+          Token.H2([
 
             Token.Phrase("H2",2)
           ]),
-          Heading.H3([
+          Token.H3([
 
             Token.Phrase("H3",2)
           ]),
-          Heading.H4([
+          Token.H4([
 
             Token.Phrase("H4",2)
           ]),
-          Heading.H5([
+          Token.H5([
 
             Token.Phrase("H5",2)
           ]),
-          Heading.H6([
+          Token.H6([
 
               Token.Phrase("H6",2)
           ])
             ]);
 
     // Act 
-
     Root actual = Parser.Parse(sample);
 
     // Assert
@@ -108,7 +105,6 @@ public class HeadingTest
     string h2 = $"## {text}";
 
     // Act 
-
     Root actualH1 = Parser.Parse(h1);
     Root actualH2 = Parser.Parse(h2);
 
@@ -121,18 +117,46 @@ public class HeadingTest
   [Description("Test more than 6 #")]
   public void MoreThan6()
   {
-    // TODO should not be a header (probably need to be a word);
-    Assert.True(true);
+    // Arrange 
+    string text ="####### This is a heading 1"; 
+
+    Root expected = Token.Root([
+        Token.Phrase(text,1)
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
   }
 
 
 
   [Fact]
-  [Description("Test nested element")]
-  public void NestedElement()
+  [Description("Test nested bold text")]
+  public void NestedBold()
   {
-    // TODO should handle nested element;
-    Assert.True(true);
+    // Arrange 
+    string h3 ="H3 with nested "; 
+    string bold ="bold text";
+    string sample = $"### {h3}**{bold}**";
+
+    Root expected = Token.Root([
+        Token.H3([
+          Token.Phrase(h3,2),
+          Token.Bold([
+            Token.Phrase(bold,3)
+          ],2)
+        ])
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(sample);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+
   }
 
 }

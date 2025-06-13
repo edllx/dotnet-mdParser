@@ -30,6 +30,7 @@ public partial class Token
   public List<Token> Childrens {get;private set;} =[];
   public string Body {get; private set;} = "";
   public int Depth {get;init;}
+  const int IndentLength = 2;
 
   public Token(List<Token> childrens, string body,int depth)
   {
@@ -68,7 +69,7 @@ public partial class Token
 
   public override string ToString()
   {
-    string indentation = string.Concat(Enumerable.Repeat(" ",Depth));
+    string indentation = string.Concat(Enumerable.Repeat(" ",Depth*Token.IndentLength));
     string output = $"{indentation}{GetName()}: {Body}";
 
     foreach(Token t in Childrens)
@@ -132,6 +133,12 @@ public partial class Token
   public static NewLine NewLine(int depth)
   {
     return new(depth);
+  }
+
+  // Bold
+  public static Bold Bold(List<Token> children,int depth)
+  {
+    return new(children,depth);
   }
 }
 

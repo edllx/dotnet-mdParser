@@ -3,6 +3,8 @@ namespace edllx.dotnet.mdParser;
 public class TokenizerOptions
 {
   public int Depth {get;set;} = 1;
+  public Pattern[] Patterns = Pattern.GeneralPatterns; 
+
 }
 
 public class Tokenizer 
@@ -11,11 +13,7 @@ public class Tokenizer
   private string _source {get;init;}
   private TokenizerOptions _options {get;init;}
   private int _offset = 0;
-  private Pattern[] patterns = [
-    new HeadingPattern(), 
-        new PhrasePattern(),
-        new NewLinePattern()
-  ];
+ 
 
   public Tokenizer(string source)
   {
@@ -39,8 +37,8 @@ public class Tokenizer
     {
       bool matched = false;
 
-      for(int i =0;i<patterns.Length ;i++){
-        Pattern p  = patterns[i];
+      for(int i =0;i<_options.Patterns.Length ;i++){
+        Pattern p  = _options.Patterns[i];
 
         Token? token = p.Generate(source.Slice(_offset),_options.Depth); 
         if(token is null){continue;}
