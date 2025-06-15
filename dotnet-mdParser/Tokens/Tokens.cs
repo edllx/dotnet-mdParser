@@ -2,7 +2,6 @@ namespace edllx.dotnet.mdParser;
 
 //TODO
 /** 
-  BOLD,
   ITALIC,
   STRIKETHROUGH,
   HIGHLIGHT,
@@ -79,7 +78,6 @@ public partial class Token
 
     return output;
   }
-
 }
 
 // Generators
@@ -129,6 +127,11 @@ public partial class Token
     return new(body,depth);
   }
 
+  public static Phrase Phrase(List<Token> childrens,int depth)
+  {
+    return new(childrens,depth);
+  }
+
   // NewLine
   public static NewLine NewLine(int depth)
   {
@@ -137,6 +140,18 @@ public partial class Token
 
   // Bold
   public static Bold Bold(List<Token> children,int depth)
+  {
+    return new(children,depth);
+  }
+
+  // Italic 
+  public static Italic Italic(List<Token> children,int depth)
+  {
+    return new(children,depth);
+  }
+
+  // Strikethrough 
+  public static Strikethrough Strikethrough(List<Token> children,int depth)
   {
     return new(children,depth);
   }
@@ -152,6 +167,10 @@ public class Root : Token
 public class Phrase : Token
 {
   internal Phrase(string body, int depth) : base([], body, depth)
+  {
+  }
+
+  internal Phrase(List<Token> children, int depth) : base(children, "", depth)
   {
   }
 }

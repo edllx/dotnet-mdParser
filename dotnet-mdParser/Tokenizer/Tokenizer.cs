@@ -40,16 +40,18 @@ public class Tokenizer
       for(int i =0;i<_options.Patterns.Length ;i++){
         Pattern p  = _options.Patterns[i];
 
-        Token? token = p.Generate(source.Slice(_offset),_options.Depth); 
-        if(token is null){continue;}
-        _output.Childrens.Add(token);
+        bool success = p.Generate(_output,source.Slice(_offset),_options.Depth); 
+        if(!success){continue;}
         _offset += p.Len;
         matched = true;
 
         break;
       }
 
-      if(!matched){_offset++;}
+      if(!matched){
+        _offset++;
+
+      }
     }
 
     return _output;

@@ -158,6 +158,4 @@ public class HeadingTest
     Assert.Equal<Token>(expected,actual);
 
   }
-
 }
-
