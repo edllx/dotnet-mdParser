@@ -186,4 +186,31 @@ public class HeadingTest
     // Assert
     Assert.Equal<Token>(expected,actual);
   }
+
+  [Fact]
+  [Description("Test multiple links in one line separated by a phrase in a Header")]
+  public void MultipleLinksSeparated()
+  {
+    // Arrange 
+    string name1 = "Crafty";
+    string name2 = "Deckster";
+    string link1 ="https://github.com/liolle/Crafty"; 
+    string link2 ="https://github.com/liolle/Deckster"; 
+    string separation = "GAP";
+    string text =$"# [{name1}]({link1}){separation}[{name2}]({link2})"; 
+
+    Root expected = Token.Root([
+        Token.H1([
+          Token.Link(name1,link1,2),
+          Token.Phrase(separation,2),
+          Token.Link(name2,link2,2)
+        ])
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
 }
