@@ -155,6 +155,16 @@ public partial class Token
   {
     return new(children,depth);
   }
+
+  public static Highlight Highlight(List<Token> children,int depth)
+  {
+    return new(children,depth);
+  }
+
+  public static Paragraph Paragraph(List<Token> children,int depth)
+  {
+    return new(children,depth);
+  }
 }
 
 public class Root : Token
@@ -181,3 +191,12 @@ public class NewLine : Token
   {
   }
 }
+
+public class Paragraph : Token
+{
+  internal Paragraph (List<Token> childrens, int depth) : base(childrens,"",depth)
+  {
+  }
+}
+
+

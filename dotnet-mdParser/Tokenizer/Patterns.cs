@@ -23,6 +23,13 @@ public class NestedTokenRange
     ranges.Sort((a, b) => a.Left - b.Left);
     Stack<NestedTokenRange> stack = [];
 
+    int maxIndex = 0;
+
+    foreach(NestedTokenRange n in ranges)
+    {
+      maxIndex = Math.Max(maxIndex,n.Right);
+    }
+
     for (int i = 0; i < ranges.Count; i++)
     {
       NestedTokenRange current = ranges[i];
@@ -84,6 +91,22 @@ public class NestedTokenRange
       }
     }
 
+    // Add last phrase range
+    if(stack.Count>0)
+    {
+      NestedTokenRange top = stack.Peek();
+
+      if (top.Right<maxIndex)
+      {
+        stack.Push(new()
+            {
+            Pattern = new PhrasePattern(),
+            Left = top.Right +1,
+            Right = maxIndex
+            });
+      }
+    }
+
     return stack.ToList();
   }
 }
@@ -102,14 +125,16 @@ public abstract class Pattern : IPattern
     get
     {
       return [
-        new HeadingPattern(),
-          new BoldPattern(),
-          new ItalicPattern(),
-          new StrikethroughPattern(),
-          new PhrasePattern(),
-          new NewLinePattern(),
+        new NewLinePattern(),
+            new HeadingPattern(),
+            new ParagraphPattern(),
+            new BoldPattern(),
+            new ItalicPattern(),
+            new StrikethroughPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
 
-    ];
+      ];
     }
   }
 
@@ -119,10 +144,11 @@ public abstract class Pattern : IPattern
     {
       return [
         new BoldPattern(),
-          new ItalicPattern(),
-          new StrikethroughPattern(),
-          new PhrasePattern(),
-    ];
+            new ItalicPattern(),
+            new StrikethroughPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
+      ];
     }
   }
 
@@ -132,10 +158,11 @@ public abstract class Pattern : IPattern
     {
       return [
         new BoldPattern(),
-          new ItalicPattern(),
-          new StrikethroughPattern(),
-          new PhrasePattern(),
-    ];
+            new ItalicPattern(),
+            new StrikethroughPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
+      ];
     }
   }
 
@@ -145,9 +172,10 @@ public abstract class Pattern : IPattern
     {
       return [
         new ItalicPattern(),
-          new StrikethroughPattern(),
-          new PhrasePattern(),
-    ];
+            new StrikethroughPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
+      ];
     }
   }
 
@@ -157,9 +185,10 @@ public abstract class Pattern : IPattern
     {
       return [
         new BoldPattern(),
-          new StrikethroughPattern(),
-          new PhrasePattern(),
-    ];
+            new StrikethroughPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
+      ];
     }
   }
 
@@ -169,11 +198,27 @@ public abstract class Pattern : IPattern
     {
       return [
         new BoldPattern(),
-          new ItalicPattern(),
-          new PhrasePattern(),
-    ];
+            new ItalicPattern(),
+            new HighlightPattern(),
+            new PhrasePattern(),
+      ];
     }
   }
+
+
+  public static Pattern[] HighlightPatterns
+  {
+    get
+    {
+      return [
+        new BoldPattern(),
+            new ItalicPattern(),
+            new StrikethroughPattern(),
+            new PhrasePattern(),
+      ];
+    }
+  }
+
 
   protected Pattern(Regex expression, Regex? expressionGroup)
   {
@@ -212,11 +257,11 @@ public abstract class Pattern : IPattern
       {
         ReadOnlySpan<char> element = source.Slice(match.Index, match.Length);
         arr.Add(new()
-        {
-          Pattern = p,
-          Left = match.Index,
-          Right = match.Index + match.Length - 1
-        });
+            {
+            Pattern = p,
+            Left = match.Index,
+            Right = match.Index + match.Length - 1
+            });
       }
     }
 
@@ -241,10 +286,10 @@ public abstract class Pattern : IPattern
       string body = text.Slice(r.Left, r.Right - r.Left + 1).ToString();
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.HeaderPatterns,
-        Depth = depth + 1
-      });
+          {
+          Patterns = Pattern.HeaderPatterns,
+          Depth = depth + 1
+          });
 
       Root rr = tokenizer.Generate();
 
@@ -285,10 +330,10 @@ public class HeadingPattern : Pattern
       string body = match.Groups[2].Value.AsSpan().Slice(r.Left, r.Right - r.Left +1).ToString();
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.HeaderPatterns,
-        Depth = depth + 1
-      });
+          {
+          Patterns = Pattern.HeaderPatterns,
+          Depth = depth + 1
+          });
 
       Root rr = tokenizer.Generate();
 
@@ -326,6 +371,37 @@ public class HeadingPattern : Pattern
   }
 }
 
+
+public class ParagraphPattern : Pattern
+{
+
+  public ParagraphPattern() : base(new("([^\n]+\n)+"), null)
+  {
+  }
+
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+
+    Len = match.Length;
+
+    string body = match.Value.ReplaceLineEndings("");
+
+    Tokenizer tokenizer = new(body, new()
+        {
+        Depth = depth + 1
+        });
+
+    Root rr = tokenizer.Generate();
+
+
+    root.Childrens.Add(Token.Paragraph(rr.Childrens,depth));
+    return true;
+  }
+}
+
 public class PhrasePattern : Pattern
 {
   public PhrasePattern() : base(new("[^\n]+"), null)
@@ -354,10 +430,10 @@ public class PhrasePattern : Pattern
       }
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.PhrasePatterns,
-        Depth = depth
-      });
+          {
+          Patterns = Pattern.PhrasePatterns,
+          Depth = depth
+          });
 
       Root rr = tokenizer.Generate();
 
@@ -379,9 +455,9 @@ public class NewLinePattern : Pattern
   public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
   {
     Match? match = IsMatch(source);
-    if (match is null) { return false; }
+    if (match is null || match.Index != 0) { return false; }
 
-    Len = match.Length;
+    Len = 1;
 
     root.Childrens.Add(Token.NewLine(1));
     return true;
@@ -443,5 +519,24 @@ public class StrikethroughPattern : Pattern
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
     root.Childrens.Add(Token.Strikethrough(children, depth));
+  }
+}
+
+public class HighlightPattern : Pattern
+{
+  public HighlightPattern() : base(new(@"((?<=[^==]|^)==(?=[^==]|$))[^\n]+?((?<=[^==]|^)==(?=[^==]|$))"), null)
+  {
+  }
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    DelimiterSize = 2;
+    NestedPaterns = Pattern.HeaderPatterns;
+    return GenerateTextStyle(root, source, depth);
+  }
+
+  protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
+  {
+    root.Childrens.Add(Token.Highlight(children, depth));
   }
 }

@@ -92,4 +92,84 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
+  [Fact]
+  [Description("Simple highlighted phrase test")]
+  public void Highlight()
+  {
+    // Arrange 
+    string text ="Simple striked phrase"; 
+    string highlight = $"=={text}==";
+
+    Root expected = Token.Root([
+        Token.Highlight([
+          Token.Phrase(text,2)
+        ],1)
+    ]);
+
+    // Act 
+
+    Root actual = Parser.Parse(highlight);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+[Fact]
+  [Description("Simple Paragraph test")]
+  public void Paragraph()
+  {
+    // Arrange 
+    string phrase = "This is a paragraph."; 
+    string text =$"{phrase}\n\n"; 
+
+    Root expected = Token.Root([
+        Token.Paragraph([
+          Token.Phrase(phrase,2)
+        ],1),
+        Token.NewLine(1),
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+[Fact]
+  [Description("Special characters test")]
+  public void SpacialCharacter()
+  {
+    // Arrange 
+    string text = "&é\"'()*\\/_{}[]§è!çà-^¨$ù%´`µ£=+~"; 
+    
+    Root expected = Token.Root([
+        Token.Phrase(text,1),
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+[Fact]
+  [Description("Escape test")]
+  public void EscapeBold()
+  {
+    // Arrange 
+    string text = @"\*\*This line will not be bold\*\*"; 
+    
+    Root expected = Token.Root([
+        Token.Phrase(text,1),
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
 }

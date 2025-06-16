@@ -158,4 +158,32 @@ public class HeadingTest
     Assert.Equal<Token>(expected,actual);
 
   }
+
+  [Fact]
+  [Description("Test nested text style in header 1")]
+  public void NestedInHeader()
+  {
+    // Arrange 
+    string text = "## ~~**Bold text and _nested italic_ text in heading and strike**~~";
+
+    Root expected = Token.Root([
+        Token.H2([
+          Token.Strikethrough([
+            Token.Bold([
+              Token.Phrase("Bold text and ",4),
+              Token.Italic([
+                Token.Phrase("nested italic",5),
+              ],4),
+              Token.Phrase(" text in heading and strike",4),
+            ],3)
+          ],2)
+        ])
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
 }

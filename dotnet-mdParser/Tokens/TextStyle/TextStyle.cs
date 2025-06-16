@@ -13,9 +13,18 @@ public class Italic : Token
     {
     }
 }
+
 public class Strikethrough : Token
 {
     internal Strikethrough(List<Token> childrens, int depth) : base(childrens, "", depth)
+    {
+    }
+}
+
+
+public class Highlight : Token
+{
+    internal Highlight(List<Token> childrens, int depth) : base(childrens, "", depth)
     {
     }
 }
