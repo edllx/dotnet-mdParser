@@ -2,21 +2,10 @@ namespace edllx.dotnet.mdParser;
 
 //TODO
 /** 
-  ITALIC,
-  STRIKETHROUGH,
-  HIGHLIGHT,
-  NEW_LINE,
-  SPACE,
-  TILDE,
-  WORD,
-  ROOT,
-  PARAGRAPH,
-  ESCAPE,
   EXTERNAL_LINK,
   UL,
   LI,
   OL,
-  INPUT,
   CHECK_BOX,
   CHECK_BOX_UL,
   INLINE_CODE,
@@ -162,6 +151,11 @@ public partial class Token
   }
 
   public static Paragraph Paragraph(List<Token> children,int depth)
+  {
+    return new(children,depth);
+  }
+
+  public static InlineCode InlineCode(List<Token> children,int depth)
   {
     return new(children,depth);
   }

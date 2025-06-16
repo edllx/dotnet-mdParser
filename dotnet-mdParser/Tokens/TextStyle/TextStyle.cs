@@ -28,3 +28,11 @@ public class Highlight : Token
     {
     }
 }
+
+
+public class InlineCode : Token
+{
+    internal InlineCode(List<Token> childrens, int depth) : base(childrens, "", depth)
+    {
+    }
+}

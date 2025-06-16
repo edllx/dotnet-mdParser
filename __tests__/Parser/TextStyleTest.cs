@@ -125,4 +125,5 @@ public class TextStyleTest
     // Assert
     Assert.Equal<Token>(expected,actual);
   }
+
 }

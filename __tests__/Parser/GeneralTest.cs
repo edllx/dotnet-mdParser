@@ -114,7 +114,7 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
-[Fact]
+  [Fact]
   [Description("Simple Paragraph test")]
   public void Paragraph()
   {
@@ -136,13 +136,13 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
-[Fact]
+  [Fact]
   [Description("Special characters test")]
   public void SpacialCharacter()
   {
     // Arrange 
     string text = "&é\"'()*\\/_{}[]§è!çà-^¨$ù%´`µ£=+~"; 
-    
+
     Root expected = Token.Root([
         Token.Phrase(text,1),
     ]);
@@ -154,13 +154,13 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
-[Fact]
+  [Fact]
   [Description("Escape test")]
   public void EscapeBold()
   {
     // Arrange 
     string text = @"\*\*This line will not be bold\*\*"; 
-    
+
     Root expected = Token.Root([
         Token.Phrase(text,1),
     ]);
@@ -172,4 +172,26 @@ public class GeneralTest
     Assert.Equal<Token>(expected,actual);
   }
 
+
+  [Fact]
+  [Description("InlineCode")]
+  public void InlineCode()
+  {
+    // Arrange 
+    string code = "inline code";
+    string text =$"`{code}`"; 
+
+    Root expected = Token.Root([
+        Token.InlineCode([
+          Token.Phrase(code,2),
+        ],1), 
+    ]);
+
+    // Act 
+
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
 }

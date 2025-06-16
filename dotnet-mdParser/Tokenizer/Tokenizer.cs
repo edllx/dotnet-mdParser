@@ -49,8 +49,8 @@ public class Tokenizer
       }
 
       if(!matched){
+        // maybe do somthing here ???
         _offset++;
-
       }
     }
 

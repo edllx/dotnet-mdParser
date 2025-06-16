@@ -132,6 +132,7 @@ public abstract class Pattern : IPattern
             new ItalicPattern(),
             new StrikethroughPattern(),
             new HighlightPattern(),
+            new InlineCodePattern(),
             new PhrasePattern(),
 
       ];
@@ -147,6 +148,7 @@ public abstract class Pattern : IPattern
             new ItalicPattern(),
             new StrikethroughPattern(),
             new HighlightPattern(),
+            new InlineCodePattern(),
             new PhrasePattern(),
       ];
     }
@@ -161,6 +163,7 @@ public abstract class Pattern : IPattern
             new ItalicPattern(),
             new StrikethroughPattern(),
             new HighlightPattern(),
+            new InlineCodePattern(),
             new PhrasePattern(),
       ];
     }
@@ -218,6 +221,17 @@ public abstract class Pattern : IPattern
       ];
     }
   }
+
+  public static Pattern[] InlineCodePatterns
+  {
+    get
+    {
+      return [
+        new PhrasePattern(),
+      ];
+    }
+  }
+
 
 
   protected Pattern(Regex expression, Regex? expressionGroup)
@@ -538,5 +552,25 @@ public class HighlightPattern : Pattern
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
     root.Childrens.Add(Token.Highlight(children, depth));
+  }
+}
+
+
+public class InlineCodePattern : Pattern
+{
+  public InlineCodePattern() : base(new(@"((?<=[^`]|^)`(?=[^`]|$))[^\n]+?((?<=[^`]|^)`(?=[^`]|$))"), null)
+  {
+  }
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    DelimiterSize = 1;
+    NestedPaterns = Pattern.InlineCodePatterns;
+    return GenerateTextStyle(root, source, depth);
+  }
+
+  protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
+  {
+    root.Childrens.Add(Token.InlineCode(children, depth));
   }
 }
