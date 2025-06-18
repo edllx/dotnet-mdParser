@@ -126,6 +126,8 @@ public abstract class Pattern : IPattern
     {
       return [
         new NewLinePattern(),
+            new ULPattern(),
+            new OLPattern(),
             new LinkPattern(),
             new HeadingPattern(),
             new ParagraphPattern(),
@@ -235,6 +237,42 @@ public abstract class Pattern : IPattern
     }
   }
 
+  public static Pattern[] ULPatterns
+  {
+    get
+    {
+      return [
+        new ULPattern(),
+            new OLPattern(),
+            new LIPattern(),
+      ];
+    }
+  }
+
+
+  public static Pattern[] OLPatterns
+  {
+    get
+    {
+      return [
+        new ULPattern(),
+            new OLPattern(),
+            new LIPattern(),
+
+      ];
+    }
+  }
+
+  public static Pattern[] LIPatterns
+  {
+    get
+    {
+      return [
+        new PhrasePattern(),
+      ];
+    }
+  }
+
 
 
   protected Pattern(Regex expression, Regex? expressionGroup)
@@ -274,11 +312,11 @@ public abstract class Pattern : IPattern
       {
         ReadOnlySpan<char> element = source.Slice(match.Index, match.Length);
         arr.Add(new()
-        {
-          Pattern = p,
-          Left = match.Index,
-          Right = match.Index + match.Length - 1
-        });
+            {
+            Pattern = p,
+            Left = match.Index,
+            Right = match.Index + match.Length - 1
+            });
       }
     }
 
@@ -303,14 +341,14 @@ public abstract class Pattern : IPattern
       string body = text.Slice(r.Left, r.Right - r.Left + 1).ToString();
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.HeaderPatterns,
-        Depth = depth + 1
-      });
+          {
+          Patterns = Pattern.HeaderPatterns,
+          Depth = depth + 1
+          });
 
       Root rr = tokenizer.Generate();
 
-      foreach (Token token in rr.Childrens)
+      foreach (Token token in rr.Children)
       {
         children.Add(token);
       }
@@ -347,14 +385,14 @@ public class HeadingPattern : Pattern
       string body = match.Groups[2].Value.AsSpan().Slice(r.Left, r.Right - r.Left + 1).ToString();
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.HeaderPatterns,
-        Depth = depth + 1
-      });
+          {
+          Patterns = Pattern.HeaderPatterns,
+          Depth = depth + 1
+          });
 
       Root rr = tokenizer.Generate();
 
-      foreach (Token token in rr.Childrens)
+      foreach (Token token in rr.Children)
       {
         children.Add(token);
       }
@@ -363,22 +401,22 @@ public class HeadingPattern : Pattern
     switch (match.Groups[1].Value.Length)
     {
       case 1:
-        root.Childrens.Add(Token.H1(children));
+        root.Children.Add(Token.H1(children));
         break;
       case 2:
-        root.Childrens.Add(Token.H2(children));
+        root.Children.Add(Token.H2(children));
         break;
       case 3:
-        root.Childrens.Add(Token.H3(children));
+        root.Children.Add(Token.H3(children));
         break;
       case 4:
-        root.Childrens.Add(Token.H4(children));
+        root.Children.Add(Token.H4(children));
         break;
       case 5:
-        root.Childrens.Add(Token.H5(children));
+        root.Children.Add(Token.H5(children));
         break;
       case 6:
-        root.Childrens.Add(Token.H6(children));
+        root.Children.Add(Token.H6(children));
         break;
       default:
         return false;
@@ -407,14 +445,14 @@ public class ParagraphPattern : Pattern
     string body = match.Value.ReplaceLineEndings("");
 
     Tokenizer tokenizer = new(body, new()
-    {
-      Depth = depth + 1
-    });
+        {
+        Depth = depth + 1
+        });
 
     Root rr = tokenizer.Generate();
 
 
-    root.Childrens.Add(Token.Paragraph(rr.Childrens, depth));
+    root.Children.Add(Token.Paragraph(rr.Children, depth));
     return true;
   }
 }
@@ -442,21 +480,21 @@ public class PhrasePattern : Pattern
 
       if (r.Pattern!.GetType() == typeof(PhrasePattern))
       {
-        root.Childrens.Add(Token.Phrase(body, depth));
+        root.Children.Add(Token.Phrase(body, depth));
         continue;
       }
 
       Tokenizer tokenizer = new(body, new()
-      {
-        Patterns = Pattern.PhrasePatterns,
-        Depth = depth
-      });
+          {
+          Patterns = Pattern.PhrasePatterns,
+          Depth = depth
+          });
 
       Root rr = tokenizer.Generate();
 
-      foreach (Token token in rr.Childrens)
+      foreach (Token token in rr.Children)
       {
-        root.Childrens.Add(token);
+        root.Children.Add(token);
       }
     }
     return true;
@@ -476,7 +514,7 @@ public class NewLinePattern : Pattern
 
     Len = 1;
 
-    root.Childrens.Add(Token.NewLine(1));
+    root.Children.Add(Token.NewLine(1));
     return true;
   }
 }
@@ -496,7 +534,7 @@ public class BoldPattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.Bold(children, depth));
+    root.Children.Add(Token.Bold(children, depth));
   }
 }
 
@@ -516,7 +554,7 @@ public class ItalicPattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.Italic(children, depth));
+    root.Children.Add(Token.Italic(children, depth));
   }
 }
 
@@ -535,7 +573,7 @@ public class StrikethroughPattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.Strikethrough(children, depth));
+    root.Children.Add(Token.Strikethrough(children, depth));
   }
 }
 
@@ -554,7 +592,7 @@ public class HighlightPattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.Highlight(children, depth));
+    root.Children.Add(Token.Highlight(children, depth));
   }
 }
 
@@ -574,7 +612,7 @@ public class InlineCodePattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.InlineCode(children, depth));
+    root.Children.Add(Token.InlineCode(children, depth));
   }
 }
 
@@ -596,10 +634,10 @@ public class LinkPattern : Pattern
 
     if (source[0] == '!')
     {
-      root.Childrens.Add(Token.ImageLink(name, link, depth));
+      root.Children.Add(Token.ImageLink(name, link, depth));
     }
     else {
-      root.Childrens.Add(Token.Link(name, link, depth));
+      root.Children.Add(Token.Link(name, link, depth));
     }
 
     return true;
@@ -607,6 +645,134 @@ public class LinkPattern : Pattern
 
   protected override void CreateTextStyleToken(Root root, List<Token> children, int depth)
   {
-    root.Childrens.Add(Token.InlineCode(children, depth));
+    root.Children.Add(Token.InlineCode(children, depth));
   }
 }
+
+public class ULPattern : Pattern
+{
+
+  public ULPattern() : base(new Regex(@"([ \t]*- [^\n]+)\n?(([ \t]*(([0-9]+\.)|-) ([^\n]+\n)|([^\n]+\n?))*)(?:\n?)"),null)
+  {}
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+
+    Len = match.Length;
+
+    UL ul =Token.UL([], 1); 
+    ListBuilder builder = new(ul);
+
+    foreach(string s in match.Value.Split("\n"))
+    {
+      if(s == ""){continue;}
+
+      Tokenizer tokenizer = new(s, new()
+          {
+          Patterns = [
+          new LIPattern(),
+          new PhrasePattern()
+          ],
+          Depth = depth + 1
+          });
+
+      Root rr = tokenizer.Generate();
+
+      if(rr.Children.Count==0){
+        continue;
+      }
+
+      builder.Push(rr.Children[0]);
+      
+    }
+    root.Children.Add(ul);
+
+    //Console.WriteLine("----------------");
+    return true;
+  }
+}
+
+public class OLPattern : Pattern
+{
+
+  public OLPattern() : base(new Regex(@"([ \t]*[0-9]+\. [^\n]+)\n?(([ \t]*(([0-9]+\.)|-) ([^\n]+\n)|([^\n]+\n?))*)(?:\n?)"),null)
+  {}
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+
+    Len = match.Length;
+
+    OL ol =Token.OL([], 1); 
+    ListBuilder builder = new(ol);
+
+    foreach(string s in match.Value.Split("\n"))
+    {
+      if(s == ""){continue;}
+
+      Tokenizer tokenizer = new(s, new()
+          {
+          Patterns = [
+          new LIPattern(),
+          new PhrasePattern()
+          ],
+          Depth = depth + 1
+          });
+
+      Root rr = tokenizer.Generate();
+
+      if(rr.Children.Count==0){
+        continue;
+      }
+
+      builder.Push(rr.Children[0]);
+      
+    }
+    root.Children.Add(ol);
+
+    //Console.WriteLine("----------------");
+    return true;
+  }
+}
+
+public class LIPattern : Pattern
+{
+
+  public LIPattern() : base(new Regex(@"([ \t]*(([0-9]+\.)|-) [^\n]+)\n?"),new Regex(@"(([ \t]*)(([0-9]+\.)|-) ([^\n]+))\n?"))
+  {}
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+
+    Len = match.Length;
+
+    Tokenizer tokenizer = new(match.Groups[5].Value, new()
+        {
+        Patterns = Pattern.PhrasePatterns,
+        Depth = depth + 1
+        });
+
+    Root rr = tokenizer.Generate();
+    LI li = Token.LI(rr.Children, depth);
+
+    li.Offset = match.Groups[2].Length;
+
+    if(match.Groups[3].Value == "-")
+    {
+      li.ParentType = typeof(UL);
+    }
+    else{
+      li.ParentType = typeof(OL);
+    }
+
+    root.Children.Add(li);
+    return true;
+  }
+}
+

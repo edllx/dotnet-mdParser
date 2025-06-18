@@ -13,16 +13,25 @@ namespace edllx.dotnet.mdParser;
 
 public partial class Token 
 {
-  public List<Token> Childrens {get;private set;} =[];
-  public string Body {get; private set;} = "";
-  public int Depth {get;init;}
+  public List<Token> Children {get;private set;} =[];
+  public string Body {get; internal set;} = "";
+  public int Depth {get;private set;}
   public const int IndentLength = 2;
 
-  public Token(List<Token> childrens, string body,int depth)
+  public Token(List<Token> children, string body,int depth)
   {
-    Childrens = childrens;
+    Children = children;
     Body = body;
     Depth = depth;
+  }
+
+  public void SetDepth(int depth)
+  {
+    Depth = depth;
+    foreach(Token t in Children)
+    {
+      t.SetDepth(depth +1);
+    }
   }
 
   public override bool Equals(object? obj)
@@ -32,13 +41,20 @@ public partial class Token
     if (GetType() != obj.GetType()){return false;}
 
     Token other = (Token)obj;
-    if(other.Childrens.Count != Childrens.Count){return false;}
-    if(other.Body != Body){return false;}
-    if(other.Depth != Depth){return false;}
+    if(other.Children.Count != Children.Count){
+      return false;
 
-    for(int i =0;i<Childrens.Count;i++)
+    }
+    if(other.Body != Body){
+      return false;
+    }
+    if(other.Depth != Depth){
+      return false;
+    }
+
+    for(int i =0;i<Children.Count;i++)
     {
-      if(!Childrens[i].Equals(other.Childrens[i])) {return false;}
+      if(!Children[i].Equals(other.Children[i])) {return false;}
     }
     return true;
   }
@@ -58,7 +74,7 @@ public partial class Token
     string indentation = string.Concat(Enumerable.Repeat(" ",Depth*Token.IndentLength));
     string output = $"{indentation}{GetName()}: {Body}";
 
-    foreach(Token t in Childrens)
+    foreach(Token t in Children)
     {
       output += $"\n{t.ToString()}";
     }
@@ -70,6 +86,12 @@ public partial class Token
 // Generators
 public partial class Token
 {
+
+  public virtual void AddChild(Token t)
+  {
+    t.Depth = Depth;
+    Children.Add(t);
+  }
 
   //Root 
   public static Root Root(List<Token> childrens)
@@ -162,7 +184,7 @@ public partial class Token
   {
     return new(depth){
       Name = name,
-      Source = source
+           Source = source
     };
   }
 
@@ -170,8 +192,25 @@ public partial class Token
   {
     return new(depth){
       Name = name,
-      Source = source
+           Source = source
     };
+  }
+
+  public static UL UL(List<Token> children, int depth)
+  {
+    return new(children,depth);
+  }
+
+
+  public static OL OL(List<Token> children, int depth)
+  {
+    return new(children,depth);
+  }
+
+
+  public static LI LI(List<Token> children, int depth)
+  {
+    return new(children,depth);
   }
 }
 
@@ -184,6 +223,8 @@ public class Root : Token
 
 public class Phrase : Token
 {
+  // !! A Phrase with a body can't have children
+  // A Phrase with children can't have a body
   internal Phrase(string body, int depth) : base([], body, depth)
   {
   }
@@ -191,6 +232,34 @@ public class Phrase : Token
   internal Phrase(List<Token> children, int depth) : base(children, "", depth)
   {
   }
+
+  public override void AddChild(Token t)
+  {
+    Token last = this;
+    if(Children.Count>0)
+    {
+      last = Children.Last();
+    }
+
+
+    if(t.GetType() == typeof(Phrase) && last.GetType() == typeof(Phrase) )
+    {
+      if(!string.IsNullOrEmpty(last.Body) && !string.IsNullOrEmpty(t.Body))
+      {
+        last.Body += t.Body;
+        return;
+      }
+
+      foreach(Token token in t.Children)
+      {
+        AddChild(token);
+      }
+
+      return;
+    }
+    base.AddChild(t);
+  }
+
 }
 
 public class NewLine : Token
@@ -207,47 +276,3 @@ public class Paragraph : Token
   }
 }
 
-public class Link : Token 
-{
-  public String Name {get;init;} = "";
-  public String Source {get;init;} ="";
-
-  internal Link(int depth) : base([], "", depth)
-  {
-  }
-
-  public override string ToString()
-  {
-    string indentation = string.Concat(Enumerable.Repeat(" ",Depth*Token.IndentLength));
-    string output = $"{indentation}{GetName()}: {Name}|{Source}";
-    return output;
-
-  }
-  public override bool Equals(object? obj)
-  {
-    bool isNull =obj == null; 
-    if(obj is null) {return false;}
-    if (GetType() != obj.GetType()){return false;}
-
-    Link other = (Link)obj;
-    if(other.Childrens.Count != Childrens.Count){return false;}
-    if(other.Body != Body){return false;}
-    if(other.Depth != Depth){return false;}
-    if(other.Name != Name){return false;}
-    if(other.Source != Source){return false;}
-    
-    return true;
-  }
-
-  public override int GetHashCode()
-  {
-    throw new NotImplementedException();
-  }
-}
-
-public class ImageLink : Link 
-{
-  internal ImageLink(int depth) : base( depth)
-  {
-  }
-}

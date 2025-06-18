@@ -4,6 +4,7 @@ using edllx.dotnet.mdParser;
 
 namespace __tests__;
 
+
 public class LinkTest 
 {
   [Fact]
@@ -149,6 +150,33 @@ public class LinkTest
 
     Root expected = Token.Root([
         Token.ImageLink(name,link,1)
+    ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected,actual);
+  }
+
+
+  [Fact]
+  [Description("Simple ImageLink")]
+  public void LinkInList()
+  {
+    // Arrange 
+    string name = "Markdown";
+    string link ="https://daringfireball.net/projects/markdown/"; 
+    string text =$"- Familiarity with [{name}]({link})"; 
+
+    Root expected = Token.Root([
+        Token.UL([
+          Token.LI([
+            Token.Phrase("Familiarity with ",3),
+            Token.Link(name,link,3),
+          ],2)
+
+        ],1)
     ]);
 
     // Act 
