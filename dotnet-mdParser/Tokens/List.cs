@@ -11,7 +11,7 @@ public class ListToken : Token
   public override string ToString()
   {
     string indentation = string.Concat(Enumerable.Repeat(" ", Depth * Token.IndentLength));
-    string output = $"{indentation}{GetName()}: {Body} : {Depth} : {Offset}";
+    string output = $"{indentation}{GetName()}: {Body} : {Depth} ";
 
     foreach (Token t in Children)
     {
@@ -41,6 +41,46 @@ public class LI : ListToken
   internal LI(List<Token> children, int depth) : base(children, "", depth)
   {
   }
+}
+
+public class CheckBox : LI
+{
+  public bool Done {get;set;}
+    internal CheckBox(List<Token> children, int depth,bool done) : base(children, depth)
+    {
+      Done = done;
+    }
+
+    public override string ToString()
+    {
+      string indentation = string.Concat(Enumerable.Repeat(" ", Depth * Token.IndentLength));
+      string output = $"{indentation}{GetName()}: {Body} : {Depth} {(Done ? "done":"pending")} ";
+
+      foreach (Token t in Children)
+      {
+        output += $"\n{t.ToString()}";
+      }
+
+      return output;
+
+    }
+
+    public override bool Equals(object? obj)
+    {
+      if(obj is null) {return false;}
+      if(!base.Equals(obj)) {return false;}
+      if (!(obj is CheckBox)){return false;}
+
+      CheckBox other = (CheckBox)obj;
+      if(other.Done != Done){return false;}
+     
+      return true;
+    }
+
+    public override int GetHashCode()
+    {
+      throw new NotImplementedException();
+    }
 }
 
 [Flags]
@@ -81,7 +121,6 @@ internal class ListBuilder
     {
       LI li = (LI)token;
 
-      //Console.WriteLine($"Find group for offset: {li.Offset} : {li.ParentType!.Name.Split(".").Last()}\nAdd\n{li}\n");
       ListToken? tokenGroup = FindGroup(li.Offset, token, li.ParentType);
       if (tokenGroup is null)
       {
@@ -91,7 +130,6 @@ internal class ListBuilder
       li.SetDepth(tokenGroup.Depth + 1);
 
       _lastPushed = li;
-      //Console.WriteLine($"=>\n{tokenGroup} : \n<{li.Depth}>");
       tokenGroup.Children.Add(li);
       _lastModified = tokenGroup;
       _lastModifiedLi = li;
@@ -103,13 +141,9 @@ internal class ListBuilder
       {
         _lastModifiedLi.Children[0].AddChild(token);
       }
-      // Add text to last LI
-      //Console.WriteLine(e.Message);
-      //Console.WriteLine($"Append this to the previous LI body: {token.Body}\n");
 
     }
 
-    // Add token to group 
   }
 
   private ListToken? FindGroup(int offset, Token token, Type type)
@@ -125,29 +159,30 @@ internal class ListBuilder
     state |= offset > lastGroup.Offset ? ((int)ListBuilderFlags.LastGroupOffsetGT) : 0;
     state |= offset < lastGroup.Offset ? ((int)ListBuilderFlags.LastGroupOffsetST) : 0;
 
-    state |= lastGroup.GetType() == typeof(UL) ? ((int)ListBuilderFlags.LastUL) : 0;
-    state |= lastGroup.GetType() == typeof(OL) ? ((int)ListBuilderFlags.LastOL) : 0;
+    state |= lastGroup.GetType().IsAssignableFrom(typeof(UL)) ? ((int)ListBuilderFlags.LastUL) : 0;
+    state |= lastGroup.GetType().IsAssignableFrom(typeof(OL)) ? ((int)ListBuilderFlags.LastOL) : 0;
 
-    state |= type == typeof(UL) ? ((int)ListBuilderFlags.CurrentUL) : 0;
-    state |= type == typeof(OL) ? ((int)ListBuilderFlags.CurrentOL) : 0;
+    state |= type.IsAssignableFrom(typeof(UL)) ? ((int)ListBuilderFlags.CurrentUL) : 0;
+    state |= type.IsAssignableFrom(typeof(OL)) ? ((int)ListBuilderFlags.CurrentOL) : 0;
 
     state |= offset == dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetEQ) : 0;
     state |= offset > dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetGT) : 0;
     state |= offset < dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetST) : 0;
 
     /**
-    Console.WriteLine(state);
-    Console.WriteLine(offset);
-    Console.WriteLine(lastGroup.Offset);
-    Console.WriteLine(lastGroup.GetType().Name.Split(".").Last());
-    Console.WriteLine(type.Name.Split(".").Last());
-    Console.WriteLine(token);
-    */
+      Console.WriteLine(state);
+      Console.WriteLine(offset);
+      Console.WriteLine(lastGroup.Offset);
+      Console.WriteLine(lastGroup.GetType().Name.Split(".").Last());
+      Console.WriteLine(type.Name.Split(".").Last());
+      Console.WriteLine(token);
+      */
 
     switch (state)
     {
       case 83:
       case 163:
+      case 338:
       case 418:
       case 1107:
         Group = lastGroup;
@@ -194,8 +229,6 @@ internal class ListBuilder
           _tokens.Add(lastGroup);
         }
         return FindGroup(offset, token, type);
-
-      //break;
 
       default:
         break;

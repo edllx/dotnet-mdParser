@@ -43,11 +43,12 @@ public partial class Token
     Token other = (Token)obj;
     if(other.Children.Count != Children.Count){
       return false;
-
     }
+
     if(other.Body != Body){
       return false;
     }
+
     if(other.Depth != Depth){
       return false;
     }
@@ -201,16 +202,19 @@ public partial class Token
     return new(children,depth);
   }
 
-
   public static OL OL(List<Token> children, int depth)
   {
     return new(children,depth);
   }
 
-
   public static LI LI(List<Token> children, int depth)
   {
     return new(children,depth);
+  }
+
+  public static CheckBox CheckBox(List<Token> children, int depth,bool done)
+  {
+    return new(children,depth, done);
   }
 }
 

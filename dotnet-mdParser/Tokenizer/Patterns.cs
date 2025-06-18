@@ -268,6 +268,7 @@ public abstract class Pattern : IPattern
     get
     {
       return [
+        new CheckBoxPattern(),
         new PhrasePattern(),
       ];
     }
@@ -689,7 +690,6 @@ public class ULPattern : Pattern
     }
     root.Children.Add(ul);
 
-    //Console.WriteLine("----------------");
     return true;
   }
 }
@@ -734,7 +734,6 @@ public class OLPattern : Pattern
     }
     root.Children.Add(ol);
 
-    //Console.WriteLine("----------------");
     return true;
   }
 }
@@ -751,28 +750,67 @@ public class LIPattern : Pattern
     if (match is null || match.Index != 0) { return false; }
 
     Len = match.Length;
+    //Console.WriteLine(match.Groups[5].Value);
 
     Tokenizer tokenizer = new(match.Groups[5].Value, new()
         {
-        Patterns = Pattern.PhrasePatterns,
+        Patterns = Pattern.LIPatterns,
         Depth = depth + 1
         });
 
     Root rr = tokenizer.Generate();
-    LI li = Token.LI(rr.Children, depth);
-
-    li.Offset = match.Groups[2].Length;
+    Type parentType = typeof(UL);
+    int offset = match.Groups[2].Length;
+    LI? li = null; 
 
     if(match.Groups[3].Value == "-")
     {
-      li.ParentType = typeof(UL);
+      parentType = typeof(UL);
     }
     else{
-      li.ParentType = typeof(OL);
+      parentType = typeof(OL);
     }
+
+    if(rr.Children[0] is CheckBox)
+    {
+      li = (CheckBox) rr.Children[0];
+    }
+    else{
+      li = Token.LI(rr.Children, depth);
+    }
+
+    li.Offset = offset;
+    li.ParentType = parentType;
 
     root.Children.Add(li);
     return true;
   }
 }
 
+public class CheckBoxPattern : Pattern
+{
+
+  public CheckBoxPattern() : base(new Regex(@"(\[([xX ])\] ([^\n]+))\n?"), null)
+  {
+  }
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+
+    Len = match.Length;
+
+    //Console.WriteLine($"=>{match.Value} : {match.Groups[1].Value} : >{match.Groups[2].Value}< : {match.Groups[3].Value}");
+
+    bool Done = new Regex("^[xX]$").Match(match.Groups[2].Value).Success;
+
+    CheckBox checkbox = Token.CheckBox([
+        Token.Phrase(match.Groups[3].Value,depth+1)
+    ],depth,Done); 
+
+
+    root.Children.Add(checkbox);
+    return true;
+  }
+}
