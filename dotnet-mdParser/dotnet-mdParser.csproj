@@ -5,6 +5,21 @@
     <RootNamespace>dotnet_mdParser</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Markdown parser</Title>
+    <Authors>Leonyx</Authors>
+    <Description>Generate an AST from markdown
+    </Description>
+    <Copyright>Laurent Etienne 2025</Copyright>
+    <RepositoryUrl>https://github.com/edllx/dotnet-mdParser</RepositoryUrl>
+    <PackageTags>edllx; markdown</PackageTags>
+    <PackageProjectUrl>https://github.com/edllx/dotnet-mdParser</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
 </Project>

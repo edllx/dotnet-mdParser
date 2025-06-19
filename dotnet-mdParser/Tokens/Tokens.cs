@@ -1,16 +1,5 @@
 namespace edllx.dotnet.mdParser;
 
-//TODO
-/** 
-  UL,
-  LI,
-  OL,
-  CHECK_BOX,
-  CHECK_BOX_UL,
-  CODE_BLOCK,
-*/
-
-
 public partial class Token 
 {
   public List<Token> Children {get;private set;} =[];
