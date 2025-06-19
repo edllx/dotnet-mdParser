@@ -412,7 +412,5 @@ public class ListTest
 
     // Assert
     Assert.Equal<Token>(expected, actual);
-    Assert.True(false);
   }
-
 }
