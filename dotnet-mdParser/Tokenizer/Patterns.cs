@@ -126,6 +126,7 @@ public abstract class Pattern : IPattern
     {
       return [
         new NewLinePattern(),
+          new CodeBlockPattern(),
             new ULPattern(),
             new OLPattern(),
             new LinkPattern(),
@@ -801,8 +802,6 @@ public class CheckBoxPattern : Pattern
 
     Len = match.Length;
 
-    //Console.WriteLine($"=>{match.Value} : {match.Groups[1].Value} : >{match.Groups[2].Value}< : {match.Groups[3].Value}");
-
     bool Done = new Regex("^[xX]$").Match(match.Groups[2].Value).Success;
 
     CheckBox checkbox = Token.CheckBox([
@@ -811,6 +810,33 @@ public class CheckBoxPattern : Pattern
 
 
     root.Children.Add(checkbox);
+    return true;
+  }
+}
+
+public class CodeBlockPattern : Pattern
+{
+
+  public CodeBlockPattern() : base(new Regex(@"((?<=[^`]|^)`{3}(?=[^`]|$))(.|\n)*?((?<=[^`]|^)`{3}(?=[^`]|$))"),null)
+  {
+  }
+
+  public override bool Generate(Root root, ReadOnlySpan<char> source, int depth)
+  {
+    Match? match = IsMatch(source);
+    if (match is null || match.Index != 0) { return false; }
+    Len = match.Length;
+
+    List<String> parts = match.Value.AsSpan().Slice(3,match.Value.Length-6).ToString().Split("\n").ToList();
+    string language = "";
+
+    Match lgMatch = new Regex(" *([^\n]*)").Match(parts[0]);
+    parts.RemoveAt(0);
+
+    language = lgMatch.Groups[1].Value;
+
+    CodeBlock code = Token.CodeBlock(string.Join("\n",parts),depth,language);
+    root.Children.Add(code);
     return true;
   }
 }

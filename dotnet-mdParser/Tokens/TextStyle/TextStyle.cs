@@ -36,3 +36,22 @@ public class InlineCode : Token
     {
     }
 }
+
+public class CodeBlock : Token
+{
+  public string Language {get;} = "";
+  private int MaxDisplayLen = 20;
+  internal CodeBlock(string body, int depth,string language) : base([], body, depth)
+  {
+    Language = language;
+  }
+
+  public override string ToString()
+  {
+    string indentation = string.Concat(Enumerable.Repeat(" ",Depth*Token.IndentLength));
+
+    string output = $"{indentation}{GetName()}: {string.Join("",Body.AsSpan().Slice(0,Math.Min(MaxDisplayLen,Body.Length)).ToString().Split("\n"))} {(Body.Length > MaxDisplayLen ? "..." : "")}";
+
+    return output;
+  }
+}

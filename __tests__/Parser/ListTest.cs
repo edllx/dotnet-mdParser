@@ -4,7 +4,7 @@ using edllx.dotnet.mdParser;
 namespace __tests__;
 
 
-public partial class TestInput
+internal partial class TestInput
 {
   public const string BaseULList = "- A\n  - Sub list of A\n   - Element of sub list of A\n- B\n  - Sub list of B\n- Simple LI";
   public const string BaseOLList = "1. A\n  - Sub list of A\n   - Element of sub list of A\n- B\n  - Sub list of B\n- Simple LI";
@@ -20,7 +20,6 @@ public partial class TestInput
   public const string TaskListInOl = "1. A\n- [ ] Should be a task\n  - Sub list";
   public const string TaskListInOl2 = "1. A\n- [ ] Should be a task\n [ ] Should not be a task\n  - Sub list";
 }
-
 
 public class ListTest
 {

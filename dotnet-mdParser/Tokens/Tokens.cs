@@ -216,6 +216,11 @@ public partial class Token
   {
     return new(children,depth, done);
   }
+
+  public static CodeBlock CodeBlock(string body, int depth, string language)
+  {
+    return new(body,depth,language);
+  }
 }
 
 public class Root : Token
