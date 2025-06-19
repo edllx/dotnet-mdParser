@@ -1,10 +1,10 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "__tests__", "__tests__\__tests__.csproj", "{63BCF224-4AD2-9518-DE81-95691D79E8E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-mdParser", "dotnet-mdParser\dotnet-mdParser.csproj", "{003D059F-3386-8A3A-FF34-ECB83AA00957}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Edllx.dotnet.mdParser", "Edllx.dotnet.mdParser\Edllx.dotnet.mdParser.csproj", "{2AEC929F-5280-4837-8EEF-87B65A3D01F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,14 @@ Global
 		{003D059F-3386-8A3A-FF34-ECB83AA00957}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{003D059F-3386-8A3A-FF34-ECB83AA00957}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{003D059F-3386-8A3A-FF34-ECB83AA00957}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AE97864-90D5-40A1-93BD-844D2922E95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AE97864-90D5-40A1-93BD-844D2922E95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AE97864-90D5-40A1-93BD-844D2922E95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AE97864-90D5-40A1-93BD-844D2922E95C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2AEC929F-5280-4837-8EEF-87B65A3D01F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AEC929F-5280-4837-8EEF-87B65A3D01F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AEC929F-5280-4837-8EEF-87B65A3D01F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AEC929F-5280-4837-8EEF-87B65A3D01F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

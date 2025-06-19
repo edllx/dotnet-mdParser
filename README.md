@@ -7,7 +7,7 @@ or render in various formats.
 ## Installation
 
 ```bash
-dotnet ... 
+dotnet add package Edllx.dotnet.mdParser
 ```
 
 ## Features

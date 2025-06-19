@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\dotnet-mdParser\dotnet-mdParser.csproj" />
+    <ProjectReference Include="..\Edllx.dotnet.mdParser\Edllx.dotnet.mdParser.csproj" />
   </ItemGroup>
 
 </Project>
