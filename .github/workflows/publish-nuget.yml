@@ -27,6 +27,7 @@ jobs:
           fi
   test:
     needs: check
+    if: ${{ !needs.check.outputs.should_skip }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,7 +39,7 @@ jobs:
         with:
           dotnet-version: '9.0.x'  
 
-      - name: Lauch tests
+      - name: Launch tests
         run: dotnet test __tests__/
 
 
