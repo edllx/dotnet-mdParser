@@ -139,11 +139,16 @@ internal class ListBuilder
     {
       if (_lastModifiedLi is not null)
       {
-        _lastModifiedLi.Children[0].AddChild(token);
+        if (token is Phrase)
+        {
+          _lastModifiedLi.Children[0].AddChild(token);
+        }
+        else
+        {
+          _lastModifiedLi.AddChild(token);
+        }
       }
-
     }
-
   }
 
   private ListToken? FindGroup(int offset, Token token, Type type)
@@ -169,14 +174,6 @@ internal class ListBuilder
     state |= offset > dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetGT) : 0;
     state |= offset < dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetST) : 0;
 
-    /**
-      Console.WriteLine(state);
-      Console.WriteLine(offset);
-      Console.WriteLine(lastGroup.Offset);
-      Console.WriteLine(lastGroup.GetType().Name.Split(".").Last());
-      Console.WriteLine(type.Name.Split(".").Last());
-      Console.WriteLine(token);
-      */
 
     switch (state)
     {
@@ -184,7 +181,9 @@ internal class ListBuilder
       case 163:
       case 338:
       case 418:
+      case 1106:
       case 1107:
+      case 1109:
         Group = lastGroup;
         break;
 
@@ -213,21 +212,28 @@ internal class ListBuilder
         Group = _tokens.Last();
         break;
 
-      case 147:
-      case 402:
       case 1112:
       case 1128:
+        if(lastGroup.Offset == offset){return lastGroup;}
 
+        while (_tokens.Count > 0 && offset < lastGroup.Offset)
+        {
+          lastGroup = _tokens.Last();
+          _tokens.RemoveAt(_tokens.Count - 1);
+        }
+
+        _tokens.Add(lastGroup);
+        return FindGroup(offset, token, type);
+
+      case 147:
+      case 402:
         while (_tokens.Count > 0 && offset <= lastGroup.Offset)
         {
           lastGroup = _tokens.Last();
           _tokens.RemoveAt(_tokens.Count - 1);
         }
 
-        if (_tokens.Count == 0)
-        {
-          _tokens.Add(lastGroup);
-        }
+        _tokens.Add(lastGroup);
         return FindGroup(offset, token, type);
 
       default:

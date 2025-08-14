@@ -44,7 +44,10 @@ public partial class Token
 
     for(int i =0;i<Children.Count;i++)
     {
-      if(!Children[i].Equals(other.Children[i])) {return false;}
+      if (!Children[i].Equals(other.Children[i]))
+      {
+        return false;
+      }
     }
     return true;
   }
@@ -79,7 +82,7 @@ public partial class Token
 
   public virtual void AddChild(Token t)
   {
-    t.Depth = Depth;
+    t.SetDepth(Depth+1); 
     Children.Add(t);
   }
 

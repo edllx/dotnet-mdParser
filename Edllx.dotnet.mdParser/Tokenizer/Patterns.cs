@@ -469,8 +469,8 @@ public class PhrasePattern : Pattern
   {
     Match? match = IsMatch(source);
     if (match is null) { return false; }
-
     Len = match.Length;
+    
 
     List<Token> children = [];
     ReadOnlySpan<char> boldBody = match.Value.AsSpan();
@@ -480,6 +480,7 @@ public class PhrasePattern : Pattern
     {
       string body = boldBody.Slice(r.Left, r.Right - r.Left + 1).ToString();
 
+      
       if (r.Pattern!.GetType() == typeof(PhrasePattern))
       {
         root.Children.Add(Token.Phrase(body, depth));
@@ -489,10 +490,12 @@ public class PhrasePattern : Pattern
       Tokenizer tokenizer = new(body, new()
           {
           Patterns = Pattern.PhrasePatterns,
-          Depth = depth
+          Depth = depth 
           });
 
       Root rr = tokenizer.Generate();
+      
+      
 
       foreach (Token token in rr.Children)
       {
@@ -751,7 +754,6 @@ public class LIPattern : Pattern
     if (match is null || match.Index != 0) { return false; }
 
     Len = match.Length;
-    //Console.WriteLine(match.Groups[5].Value);
 
     Tokenizer tokenizer = new(match.Groups[5].Value, new()
         {
@@ -771,7 +773,7 @@ public class LIPattern : Pattern
     else{
       parentType = typeof(OL);
     }
-
+    
     if(rr.Children[0] is CheckBox)
     {
       li = (CheckBox) rr.Children[0];
@@ -804,9 +806,16 @@ public class CheckBoxPattern : Pattern
 
     bool Done = new Regex("^[xX]$").Match(match.Groups[2].Value).Success;
 
-    CheckBox checkbox = Token.CheckBox([
-        Token.Phrase(match.Groups[3].Value,depth+1)
-    ],depth,Done); 
+    Tokenizer tokenizer = new(match.Groups[3].Value, new()
+        {
+        Patterns = Pattern.LIPatterns,
+        Depth = depth + 1
+        });
+
+    Root rr = tokenizer.Generate();
+
+
+    CheckBox checkbox = Token.CheckBox(rr.Children,depth,Done); 
 
 
     root.Children.Add(checkbox);

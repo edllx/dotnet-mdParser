@@ -19,6 +19,9 @@ internal partial class TestInput
   public const string TaskList1 = "- A\n  - [ ] Sub task of A\n    - [X] Checked task\n- B\n  - [ ] Sub task of B\n- [ ] Tasks C\n  - [ ] Sub task of C\n  - [] not a task\n- [x]not a task";
   public const string TaskListInOl = "1. A\n- [ ] Should be a task\n  - Sub list";
   public const string TaskListInOl2 = "1. A\n- [ ] Should be a task\n [ ] Should not be a task\n  - Sub list";
+  public const string TaskListChecbox1 = "- [ ] element 1 **line**";
+  public const string TaskListChecbox2 = "- [ ] element 1 \n**line**";
+  public const string ListIndent1 = "- ligne 1\n  - ligne 2\n   - ligne 3\n  - ligne 4";
 }
 
 public class ListTest
@@ -98,11 +101,9 @@ public class ListTest
                 Token.Phrase("Sub list of B",5)
               ],4),
             ],3),
-          ],2),
-          Token.UL([
-              Token.LI([
-                Token.Phrase("Simple LI",4)
-              ],3),
+            Token.LI([
+              Token.Phrase("Simple LI",4)
+            ],3),
           ],2),
           ],1),
           ]);
@@ -406,6 +407,92 @@ public class ListTest
           ],2),
         ],1),
     ]);
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected, actual);
+  }
+
+  [Fact]
+  [Description]
+  public void TaskInULWithNested()
+  {
+
+    //public const string TaskListChecbox1 = "- [ ] element 1 **line**";
+
+    string text = TestInput.TaskListChecbox1;
+
+    Root expected = Token.Root([
+        Token.UL([
+          Token.CheckBox([
+            Token.Phrase("element 1 ",3),
+            Token.Bold([
+              Token.Phrase("line",4)
+            ],3)
+          ],2,false),
+        ],1),
+    ]);
+
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected, actual);
+
+  }
+
+  [Fact]
+  [Description]
+  public void TaskInULWithNestedMulti()
+  {
+    //public const string TaskListChecbox2 = "- [ ] element 1 \n**line**";
+
+    string text = TestInput.TaskListChecbox2;
+    Root expected = Token.Root([
+        Token.UL([
+          Token.CheckBox([
+            Token.Phrase("element 1 ",3),
+            Token.Bold([
+              Token.Phrase("line",4)
+            ],3)
+          ],2,false),
+        ],1),
+    ]);
+
+
+    // Act 
+    Root actual = Parser.Parse(text);
+
+    // Assert
+    Assert.Equal<Token>(expected, actual);
+
+  }
+
+  [Fact]
+  [Description]
+  public void ListIndent1()
+  {
+    //  public const string ListIndent1 = "- ligne 1\n  - ligne 2\n   - ligne 3\n  - ligne 4";
+
+    string text = TestInput.ListIndent1;
+
+    Root expected = Token.Root([
+
+        Token.UL([
+          Token.LI([Token.Phrase("ligne 1",3)],2),
+          Token.UL([
+            Token.LI([Token.Phrase("ligne 2",4)],3),
+            Token.UL([
+              Token.LI([Token.Phrase("ligne 3",5)],4),
+            ],3),
+            Token.LI([Token.Phrase("ligne 4",4)],3),
+          ],2),
+        ],1),
+    ]);
+
 
     // Act 
     Root actual = Parser.Parse(text);
