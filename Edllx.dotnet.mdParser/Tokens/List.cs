@@ -175,6 +175,8 @@ internal class ListBuilder
     state |= offset < dp && dp != 0 ? ((int)ListBuilderFlags.LastPushedOffsetST) : 0;
 
 
+    Console.WriteLine($"{state}: {token}");
+
     switch (state)
     {
       case 83:
@@ -208,12 +210,14 @@ internal class ListBuilder
         break;
 
       case 400:
+      case 1171:
         _tokens.RemoveAt(_tokens.Count - 1);
         Group = _tokens.Last();
         break;
 
       case 1112:
       case 1128:
+      case 1176:
         if(lastGroup.Offset == offset){return lastGroup;}
 
         while (_tokens.Count > 0 && offset < lastGroup.Offset)

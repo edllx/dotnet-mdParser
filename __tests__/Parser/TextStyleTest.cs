@@ -3,7 +3,7 @@ using System.ComponentModel;
 using edllx.dotnet.mdParser;
 namespace __tests__;
 
-internal partial class TestInput
+public partial class TestInput
 {
 
   public const string Code1 = @"

@@ -17,23 +17,24 @@
       https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
     -->
   </PropertyGroup>
-
+  
   <ItemGroup>
     <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Inputs\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="xunit.v3" Version="2.0.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Edllx.dotnet.mdParser\Edllx.dotnet.mdParser.csproj" />
   </ItemGroup>
-
+  
 </Project>

@@ -18,7 +18,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(text);
 
     // Assert
@@ -40,7 +39,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(bold);
 
     // Assert
@@ -62,7 +60,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(Italic);
 
     // Assert
@@ -85,7 +82,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(Italic);
 
     // Assert
@@ -107,7 +103,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(highlight);
 
     // Assert
@@ -188,7 +183,6 @@ public class GeneralTest
     ]);
 
     // Act 
-
     Root actual = Parser.Parse(text);
 
     // Assert
