@@ -1,3 +1,3 @@
 1. A
-- [ ] Should be a task
-  - Sub list
+  - [ ] Should be a task
+    - Sub list

@@ -3,8 +3,24 @@ using edllx.dotnet.mdParser;
 namespace __tests__; 
 
 
-public class GeneralTest
+public class GeneralTest : IClassFixture<TestInput>
 {
+  private readonly TestInput _testInput;
+
+  public GeneralTest(TestInput testInput)
+  {
+    _testInput = testInput;
+  }
+
+  private string Get(string key)
+  {
+    if(!_testInput.Input.TryGetValue(key, out string? text) || string.IsNullOrEmpty(text))
+    {
+      throw new Exception($"Missing Input: [{text}]");
+    }
+
+    return text;
+  }
 
   [Fact]
   [Description("Simple phrase test")]
@@ -188,4 +204,5 @@ public class GeneralTest
     // Assert
     Assert.Equal<Token>(expected,actual);
   }
+ 
 }

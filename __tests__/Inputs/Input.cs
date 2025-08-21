@@ -5,7 +5,8 @@ public partial class TestInput
 
   private Dictionary<string, string> input = new(){
     ["TaskListCheckbox1.md"] = "- [ ] element 1 **line**",
-    ["TaskListCheckbox2.md"] = "- [ ] element 1 \n**line**"
+    ["TaskListCheckbox2.md"] = "- [ ] element 1 \n**line**",
+    ["SimpleLink.md"] = "Simple Link [link](https://github.com)"
   };
 
   public TestInput()

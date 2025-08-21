@@ -667,8 +667,8 @@ public class ULPattern : Pattern
 
     Len = match.Length;
 
-    UL ul =Token.UL([], 1); 
-    ListBuilder builder = new(ul);
+    //UL ul =Token.UL([], 1); 
+    ListBuilder builder = new();
 
     foreach(string s in match.Value.Split("\n"))
     {
@@ -690,9 +690,13 @@ public class ULPattern : Pattern
       }
 
       builder.Push(rr.Children[0]);
-      
     }
-    root.Children.Add(ul);
+    
+    var res = builder.Build();
+    foreach (var t in res)
+    {
+      root.Children.Add(t);
+    }
 
     return true;
   }
@@ -712,7 +716,7 @@ public class OLPattern : Pattern
     Len = match.Length;
 
     OL ol =Token.OL([], 1); 
-    ListBuilder builder = new(ol);
+    ListBuilder builder = new();
 
     foreach(string s in match.Value.Split("\n"))
     {
@@ -736,8 +740,13 @@ public class OLPattern : Pattern
       builder.Push(rr.Children[0]);
       
     }
-    root.Children.Add(ol);
 
+    var res = builder.Build();
+    foreach (var t in res)
+    {
+      root.Children.Add(t);
+    }
+   
     return true;
   }
 }
